@@ -1,0 +1,12 @@
+name: Extendmapping
+title: Extendmapping
+username:
+account: jiachenfeng
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 3211126
+bundleId: 3848188
+url: https://jiachenfeng.shinyapps.io/Extendmapping/
+when: 1605114459.65221
+asMultiple: FALSE
+asStatic: FALSE
