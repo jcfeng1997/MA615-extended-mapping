@@ -1,0 +1,115 @@
+---
+title: "Extended Mapping Report"
+author: "Hao Shen, Bruce Mallory, Jiachen Feng"
+date: "11/11/2020"
+output: pdf_document
+toc: true
+toc_depth: 5
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+pacman::p_load("maps","tmap", "tmaptools", "tigris", "hurricaneexposuredata",
+               "tidyverse","drat", "magrittr", "sf", "dplyr", "readx1","bookdown")
+```
+
+
+
+
+
+
+# 1.Introduction
+## FEMA
+
+**The Federal Emergency Management Agency**(FEMA) is an agency of the United States Department of Homeland Security, initially created under President Jimmy Carter by Presidential Reorganization Plan No. 3 of 1978 and implemented by two Executive Orders on April 1, 1979. The agency's primary purpose is to coordinate the response to a disaster that has occurred in the United States and that overwhelms the resources of local and state authorities.[^1] 
+
+Here's the logo of **FEMA**:
+
+![Logo of FEMA](E:/Boston University/DS in R/ExtendedMapping-main/fema.png)
+
+[^1]:Reference:Wikipedia. Here's the weblink:[*FEMA*](https://en.wikipedia.org/wiki/Federal_Emergency_Management_Agency)
+
+## Our project
+
+In this project, we collected some data from the official website of FEMA. The data set contains a variety of incidents that occurred across the United States from 1998 to 2020. The amount of data in this dataset is huge, and we did some simple EDA with the data. In addition, we produced a presentation using revealjs and a Shiny application. We made the presentation to present our project, and produced the Shiny application for further exploration.
+
+Here we show what the dataset looks like:
+
+declarationDate|incidentType|state|projectAmount
+--|:--:|--:|--:
+1998-08-26T04:00:00.000Z|Severe Storm(s)|Texas|11300
+2011-05-13T04:00:00.000Z|Flood|Georgia|21907
+2018-09-14T04:00:00.000Z|Hurricane|North Carolina|75000
+
+
+# 2.EDA
+## Incident Type
+
+<p>From the dataset, we found that the incident type can be divided into many categories. Some types of incidents happen frequently, and some are not. We were curious about the frequency of each incident type, so we drew a pie chart to see the percentage of each incident type. </p>
+
+<div style="font-size:10pt;font-weight:bold">
+```{r}
+#Read the data
+fema_dat <- read.csv("E:/Boston University/DS in R/ExtendedMapping-main/PublicAssistanceFundedProjectsDetails.csv")
+
+#Draw a pie chart
+freq_incident <- data.frame(table(fema_dat$incidentType)) 
+colnames(freq_incident) <- c('Type','Frequency')
+
+label_value <- paste('(', round(freq_incident$Frequency/sum(freq_incident$Frequency) * 100, 1), '%)', sep = '')
+label <- paste(freq_incident$Type, label_value, sep = '')
+
+freq_plot <- ggplot(freq_incident,aes(x="",y=Frequency,fill=Type))+
+  geom_bar(position="stack", stat="identity") + 
+  coord_polar(theta = 'y') + 
+  labs(x = '', y = '', title = '') + 
+  theme(axis.text = element_blank()) + 
+  theme(axis.ticks = element_blank()) + 
+  scale_fill_discrete(labels = label)+
+  ggtitle('Percentage of Incident Type')+
+  theme(plot.title = element_text(hjust = .5))
+freq_plot
+
+```
+</div>
+
+## State
+
+<p>Also, we were interested in the frequency of incidents in each state, so we drew a chart about it as well. However, there are too many states, so we selected those with high frequency to draw the chart.  </p>
+
+<div style="font-size:10pt;font-weight:bold">
+```{r}
+freq_state_all <- data.frame(table(fema_dat$state))
+colnames(freq_state_all) <- c('State','Frequency')
+freq_state <- filter(freq_state_all,Frequency>=25000)
+
+freq_plot_2 <- ggplot(freq_state,aes(x=State,y=Frequency,fill=State))+
+  geom_bar(position="dodge", stat="identity",colour="black") + 
+  ggtitle('Frequency of Incidents in Each State')+
+  theme(plot.title = element_text(hjust = .5))
+freq_plot_2
+
+```
+</div>
+
+# 3.Presentation using revealjs
+
+The revealjs package (El Hattab and Allaire 2017) provides an output format **revealjs::revealjs_presentation** that can be used to create yet another style of HTML5 slides based on the JavaScript library reveal.js. We produced a presentation using revealjs, which presents our work in a different way.
+
+To get the full information about the slides, please click the link:[*Github Repo*](https://github.com/BruceMallory/ExtendedMapping). All the details related to our project are in this Github repository. 
+
+
+# 4.ShinyApp
+
+Shiny application is the core part of our project. In this part, we produced a functional shiny application, which allows users to select and adjust the display of maps and data plots. Through this shiny application, users are able to choose a specific year and hurricane and see a corresponding map. Some pictures of the user interface are attached in the appendix.
+
+To get the full information about the shiny application, please click the link:[*Github Repo*](https://github.com/BruceMallory/ExtendedMapping). All the details related to our project are in this Github repository. 
+
+
+# 5.Appendix
+
+![User Interface1](E:/Boston University/DS in R/ExtendedMapping-main/shiny1.png)
+
+![User Interface2](E:/Boston University/DS in R/ExtendedMapping-main/shiny2.png)
+
+![User Interface3](E:/Boston University/DS in R/ExtendedMapping-main/shiny3.png)
